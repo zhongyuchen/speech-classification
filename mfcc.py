@@ -142,10 +142,10 @@ def short_time_energy(frames, data, framerate, frame_size, frame_stride, energy_
     energy = np.sum(np.square(frames), axis=1)
     energy /= np.max(energy)
     to_index = np.arange(len(energy))
-    print(energy>energy_threshold)
+    # print(energy>energy_threshold)
     idx = to_index[energy>energy_threshold]
-    print(idx[0], idx[-1])
-    print(energy.shape)
+    # print(idx[0], idx[-1])
+    # print(energy.shape)
     # plt.subplot(211)
     # plt.plot(np.arange(0, idx[0]), energy[0:idx[0]], 'b')
     # plt.plot(np.arange(idx[0]-1, idx[-1]+1), energy[idx[0]-1:idx[-1]+1], 'r')
@@ -183,22 +183,22 @@ def zero_crossing_rate(frames, data, frame_idx, data_idx, zrc_threshold):
     while zrc[end_idx] < zrc_threshold and end_idx < len(zrc):
         end_idx += 1
 
-    plt.subplot(211)
-    plt.plot(np.arange(0, start_idx + 1), zrc[:start_idx + 1], 'b')
-    plt.plot(np.arange(start_idx, end_idx), zrc[start_idx:end_idx], 'r')
-    plt.plot(np.arange(end_idx - 1, len(zrc)), zrc[end_idx - 1:], 'b')
-    plt.title('End Point Detection')
-    plt.subplot(212)
+    # plt.subplot(211)
+    # plt.plot(np.arange(0, start_idx + 1), zrc[:start_idx + 1], 'b')
+    # plt.plot(np.arange(start_idx, end_idx), zrc[start_idx:end_idx], 'r')
+    # plt.plot(np.arange(end_idx - 1, len(zrc)), zrc[end_idx - 1:], 'b')
+    # plt.title('End Point Detection')
+    # plt.subplot(212)
 
     start_idx = frame2data(start_idx)
     end_idx = frame2data(end_idx)
-    print(start_idx, end_idx)
-    plt.plot(np.arange(0, start_idx + 1), data[0:start_idx + 1], 'b')
-    plt.plot(np.arange(start_idx, end_idx), data[start_idx:end_idx], 'r')
-    plt.plot(np.arange(end_idx-1, len(data)), data[end_idx-1:], 'b')
-    plt.title('Data')
-    plt.plot(data)
-    plt.show()
+    # print(start_idx, end_idx)
+    # plt.plot(np.arange(0, start_idx + 1), data[0:start_idx + 1], 'b')
+    # plt.plot(np.arange(start_idx, end_idx), data[start_idx:end_idx], 'r')
+    # plt.plot(np.arange(end_idx-1, len(data)), data[end_idx-1:], 'b')
+    # plt.title('Data')
+    # plt.plot(data)
+    # plt.show()
     # exit()
     return [start_idx, end_idx]
 
@@ -213,13 +213,13 @@ def end_point_detection(data, framerate, frame_size, frame_stride):
     time_idx, data_idx = short_time_energy(frames, data, framerate, frame_size, frame_stride, energy_threshold)
     [start_idx, end_idx] = zero_crossing_rate(frames, data, time_idx, data_idx, zrc_threshold)
 
-    plt.plot(np.arange(0, start_idx), data[0:start_idx], 'b')
-    plt.plot(np.arange(start_idx -1, end_idx+1), data[start_idx-1:end_idx+1], 'r')
-    plt.plot(np.arange(end_idx, len(data)), np.zeros(len(data)-end_idx), 'b')
-    plt.title('Data')
+    # plt.plot(np.arange(0, start_idx), data[0:start_idx], 'b')
+    # plt.plot(np.arange(start_idx -1, end_idx+1), data[start_idx-1:end_idx+1], 'r')
+    # plt.plot(np.arange(end_idx, len(data)), np.zeros(len(data)-end_idx), 'b')
+    # plt.title('Data')
     # plt.plot(data)
-    plt.show()
-    exit()
+    # plt.show()
+    # exit()
 
 
 def mfcc(sample, config):
@@ -333,7 +333,7 @@ def mfcc(sample, config):
     cep_lifter = int(config['mfcc']['cep_lifter'])
     mfcc_feat = lifter(mfcc_feat, cep_lifter)
     # mfcc_feat -= (np.mean(mfcc_feat, axis=0) + 1e-8)
-    mfcc_feat = librosa.feature.delta(mfcc_feat)
+    # mfcc_feat = librosa.feature.delta(mfcc_feat)
     print(mfcc_feat.shape)
 
     # mfcc_feat = librosa.feature.mfcc(y=sample.data, sr=sample.framerate, n_mfcc=12)
@@ -362,15 +362,10 @@ def mfcc_one(folder_path, file, time_length=2.0):
 def mfcc_all(data, config):
     label = []
     mfcc_feats = []
-    # sizes = set()
     for sample in tqdm(data, desc="mfcc"):
         # mfcc_feats.append(mfcc(sample, config))
-        feat = librosa.feature.mfcc(y=sample.data, sr=sample.framerate, n_mfcc=12)
+        mfcc_feats.append(librosa.feature.mfcc(y=sample.data, sr=sample.framerate, n_mfcc=12))
         label.append(sample.label)
-        mfcc_feats.append(feat)
-        # sizes.add(feat.shape)
-    # print(len(sizes))
-    # print(sizes)
     return {
         'x': np.array(mfcc_feats),
         'y': np.array(label)
@@ -379,19 +374,19 @@ def mfcc_all(data, config):
 
 def dump_data(config):
     train_raw, dev_raw = get_raw_data(config)
-    train_data = mfcc_all(train_raw, config)
-    dev_data = mfcc_all(dev_raw, config)
 
-    pickle.dump(train_data, open(os.path.join(config['mfcc']['data_path'], config['data']['train_file']), 'wb'))
+    dev_data = mfcc_all(dev_raw, config)
     pickle.dump(dev_data, open(os.path.join(config['mfcc']['data_path'], config['data']['dev_file']), 'wb'))
-    # print(train_data.shape, dev_data.shape)
+
+    train_data = mfcc_all(train_raw, config)
+    pickle.dump(train_data, open(os.path.join(config['mfcc']['data_path'], config['data']['train_file']), 'wb'))
 
 
 if __name__ == "__main__":
     config = configparser.ConfigParser()
     config.read("config.ini")
-    # dump_data(config)
-    # exit()
+    dump_data(config)
+    exit()
 
     sample = get_sample(os.path.join(config['data']['raw_data_path'], config['data']['sample'][:11]), config['data']['sample'], float(config['data']['time_length']))
     # mfcc(sample, config)

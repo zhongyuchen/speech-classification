@@ -47,11 +47,8 @@ def spectrogram(sample, config):
 def spectrogram_all(data, config):
     label = []
     spectrogram_feats = []
-    # sizes = set()
     for sample in tqdm(data, desc="spectrogram"):
-        #spectrogram_feats.append(spectrogram(sample, config))
-        feat = librosa.amplitude_to_db(np.abs(librosa.stft(sample.data)), ref=np.max)
-        # print(feat.shape)
+        # spectrogram_feats.append(spectrogram(sample, config))
         spectrogram_feats.append(librosa.amplitude_to_db(np.abs(librosa.stft(sample.data)), ref=np.max))
         label.append(sample.label)
     return {

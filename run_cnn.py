@@ -2,13 +2,11 @@
 import argparse
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 import torch.optim as optim
 from cnn import CNN, VGG
 import configparser
-from data.mfcc.dataset import MFCCDataset
+from data.dataset import MFCCDataset
 import os
-import pickle
 from tensorboardX import SummaryWriter
 
 
