@@ -1,78 +1,53 @@
 # speech-classification
 
-思路：输入语音信号，获取特征，特征进入分类器分类，输出结果
+CNN and VGG isolated word recognition with interactive website for testing, using `flask` as backend.
 
-语音信号要做端点检测，找出开始、结束点，裁剪好，再获取特征
-说的快慢不一，用固定的窗取出的特征不一样，怎么处理？
-MFCC：提取特征feature
+## Prerequisites
 
-分帧就是把连续的若干个点（256/512？）设为一帧，帧长一般取为 20 ~ 50 毫秒，20、25、30、40、50 都是比较常用的数值，甚至还有人用 32
-相邻两帧的起始位置的时间差叫做帧移，常见的取法是取为帧长的一半
+* Install the required packages by:
+```angular2
+pip install -r requirements.txt
+```
 
-核心代码自己写，不要全都调库->自己写的函数提出的特征，和用库提出的特征有多少区别？自己的和库的代码有多少区别？
+## Dataset
 
-1. 用包提取特征，训一个cnn网络（pre-train），看下acc，确认这个网络是可用的
-2. 自己提取特征，重新训cnn网络（pre-train），看最终acc
+The speech recognition neural network is trained on [DSPSpeech-20](https://github.com/czhongyu/DSPSpeech-20) dataset,
+which is collected on [website](https://czhongyu.github.io/audio-collector/). 
+Check [here](https://github.com/czhongyu/audio-collector) for the implementation of the collecting website.
 
-sh 脚本文件+argparse/tf的flags 
-或者 
-configparser(path management included)+ini file
+## Speech Recognition Implementation
 
-create model?
-pytorch/tensorflow template?
+Check `report/report.pdf` for more details.
 
+* train/dev ratio: 4-1
+* feature: spectrogram and MFCC
+* model: CNN and VGG
 
-## 数据的问题
+## How to train
 
-1.
-多余文件
-16307130173.textClipping
-命名错误
-16307130302-15-19 (1).wav
-16307130343-15-18 (1).wav
-缺少文件
-16307130343-05-18.wav
-
-总共有13599份文件
-2. 
-_wave_params(nchannels=1, sampwidth=2, framerate=16000, nframes=29721, comptype='NONE', compname='not compressed')
-只有nframes不同，15种
-
-
-1.
-8k sampling rate -> 256 帧each window
-16k -> 512 帧each window
-
-2.
-切窗口，把信号两端的噪声切掉，越精准越好：短时平均能量（适合噪声小）、短时平均过零率（适合噪声大）
-可以两个量一起来判断：（一些参数要自己调整）
-    先做能量，再做过零率（认为能量和过零率是独立的）
-    一起做（先求出能量和过零率的二维联合分布，再判断<-概率密度函数的参数估计，用多个样本的真实起始点来估计概率密度函数的参数，会很累）
-    
-## Start
-
-13599->11599+2000
-
+* model choices in `['cnn', 'vgg']`, data choices in `['spectrogram', 'mfcc']`
+```angular2
 python run_cnn.py --model vgg --data mfcc
+```
 
-## Requirements
+## Result: dev accuracy
 
-提醒：6月24日、25日之前，都可以找我测试你们的识别系统。同时提交书面实验报告。我会检查你们的识别精度、核心代码、实验报告，这三个部分构成你们的课程项目的成绩。
+| | CNN | VGG |
+| ------ | ------ | ------ |
+| spectroram| 74.5 | 83.75|
+| MFCC | 82.25 | __94.4__ |
 
-不需要代码截图，需要有算法流程图
+## Website Implementation
 
-重视报告的质量！！！
-我建议的项目报告提纲如下：1、背景（技术趋势，最新的，可以网上调研）；2、识别算法（算法原理、系统框图、核心算法伪代码）；3、实验设置及数据集；4、实验结果分析与讨论（可以用图表等方式给出识别结果）；5、结论；6、参考文献。 大家可以参考。项目报告文字内容必须是自己撰写，不能简单拷贝网络资料，不能简单引用他人框图等，一切要自己写作。
+* backend: `flask`
+* send data from js to python backend: `ajax`
 
-语音识别：
-1. 提特征+分类神经网络!!!!!!!!!
-2. 生成与谱图+图像识别分类
-3. mfcc过程!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-4. LBG算法（k means算法）-> 更好：分裂码书法
-5. HMM识别：BW+viterbi！！！！！！！自己写！！！！效果还是很好的！！！！！比机械的模式匹配（如模式匹配+DTW）要好！
-6. kmeans+VQ codebook方法：最简单的模式匹配，在深度学习出现前用的方法
+## How to set up website for testing
 
-分类：
-1. 基本：语音内容
-2. 补充：说话的人
-3. 
+```angular2
+python server.py
+```
+
+## Author
+
+Zhongyu Chen
