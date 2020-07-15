@@ -11,9 +11,9 @@ pip install -r requirements.txt
 
 ## Dataset
 
-The speech recognition neural network is trained on [DSPSpeech-20](https://github.com/zychn/DSPSpeech-20) dataset,
-which is collected on this [website](https://zychn.github.io/audio-collector/). 
-Check [here](https://github.com/zychn/audio-collector) for the implementation of the dataset collecting website.
+The speech recognition neural network is trained on [DSPSpeech-20](https://github.com/zhongyuchen/DSPSpeech-20) dataset,
+which is collected on this [website](https://zhongyuchen.github.io/audio-collector/). 
+Check [here](https://github.com/zhongyuchen/audio-collector) for the implementation of the dataset collecting website.
 
 ## Speech Recognition Implementation
 
